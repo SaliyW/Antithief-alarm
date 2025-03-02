@@ -3,18 +3,16 @@ using UnityEngine;
 
 public class SecurityZone : MonoBehaviour
 {
-    public event Action<bool> OnTrigger;
-    private bool _isOnTrigger;
+    public event Action TriggerEnter;
+    public event Action TriggerExit;
 
     private void OnTriggerEnter(Collider other)
     {
-        _isOnTrigger = true;
-        OnTrigger?.Invoke(_isOnTrigger);
+        TriggerEnter?.Invoke();
     }
 
     private void OnTriggerExit(Collider other)
     {
-        _isOnTrigger = false;
-        OnTrigger?.Invoke(_isOnTrigger);
+        TriggerExit?.Invoke();
     }
 }
