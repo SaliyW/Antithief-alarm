@@ -7,12 +7,15 @@ public class Alarm : MonoBehaviour
     [SerializeField] private SecurityZone _securityZone;
     [SerializeField] private float _maxDelta = 0.05f;
 
+    private readonly float _minValue = 0;
+    private readonly float _maxValue = 1;
     private AudioSource _audioSource;
     private Coroutine _coroutine;
 
     private void Awake()
     {
         _audioSource = GetComponent<AudioSource>();
+        _audioSource.volume = _minValue;
     }
 
     private void OnEnable()
@@ -29,24 +32,15 @@ public class Alarm : MonoBehaviour
 
     private void ActivateSound()
     {
-        float maxValue = 1;
-
         _audioSource.Play();
         StopPreviousCoroutine();
-        _coroutine = StartCoroutine(SmoothlyChangeVolume(maxValue));
+        _coroutine = StartCoroutine(SmoothlyChangeVolume(_maxValue));
     }
 
     private void DeactivateSound()
     {
-        float minValue = 0;
-
         StopPreviousCoroutine();
-        _coroutine = StartCoroutine(SmoothlyChangeVolume(minValue));
-
-        if (_audioSource.volume == minValue)
-        {
-            _audioSource.Stop();
-        }
+        _coroutine = StartCoroutine(SmoothlyChangeVolume(_minValue));
     }
 
     private IEnumerator SmoothlyChangeVolume(float target)
@@ -56,7 +50,12 @@ public class Alarm : MonoBehaviour
             _audioSource.volume = Mathf.MoveTowards(_audioSource.volume, target, _maxDelta * Time.deltaTime);
 
             yield return null;
-        }      
+        }
+
+        if (_audioSource.volume == _minValue)
+        {
+            _audioSource.Stop();
+        }
     }
 
     private void StopPreviousCoroutine()
